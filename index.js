@@ -38,6 +38,7 @@ run().catch(console.dir);
 
 // Database collection STARTS
 const jobsCollection = client.db("workTalesDB").collection("jobs");
+const bidsCollection = client.db("workTalesDB").collection("bids");
 // Database collection ENDS
 
 // GET jobs endpoint with category query
@@ -60,6 +61,13 @@ app.get("/api/v1/jobs/:id", async(req,res)=>{
 
 })
 
+
+// POST a bid
+app.post("/api/v1/bids", async(req,res)=>{
+  const bid = req.body;
+  const result = await bidsCollection.insertOne(bid)
+  res.send(result)
+})
 
 
 app.get("/", (req, res) => {
