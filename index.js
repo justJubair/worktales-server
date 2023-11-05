@@ -1,5 +1,5 @@
 const express = require("express");
-const { MongoClient, ServerApiVersion } = require("mongodb");
+const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
 const cors = require("cors");
 require("dotenv").config();
 const app = express();
@@ -40,7 +40,7 @@ run().catch(console.dir);
 const jobsCollection = client.db("workTalesDB").collection("jobs");
 // Database collection ENDS
 
-// GET jobs endpoint
+// GET jobs endpoint with category query
 app.get("/api/v1/jobs", async (req, res) => {
     let query = {}
     if(req.query?.category){
@@ -50,6 +50,17 @@ app.get("/api/v1/jobs", async (req, res) => {
   const result = await jobsCollection.find(query).toArray();
   res.send(result);
 });
+
+// GET a single job with id
+app.get("/api/v1/jobs/:id", async(req,res)=>{
+  const id = req.params?.id;
+  const query = {_id: new ObjectId(id)}
+  const result = await jobsCollection.findOne(query)
+  res.send(result)
+
+})
+
+
 
 app.get("/", (req, res) => {
   res.send("worktales server is Running");
