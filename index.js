@@ -69,6 +69,25 @@ app.get("/api/v1/jobs/:id", async (req, res) => {
   res.send(result);
 });
 
+// UPDATE a job, with PUT method
+app.put("/api/v1/jobs/:id", async(req, res)=>{
+  const id = req.params.id;
+  const job = req.body;
+  const filter = {_id: new ObjectId(id)}
+  const options = {upsert: true}
+  const updatedJob = {
+   $set:{
+    job_title: job.title,
+    deadline: job.deadline,
+    price_range: job.price_range,
+    description: job.description,
+    category:job.updatedCategory
+   }
+  }
+  const result = await jobsCollection.updateOne(filter, updatedJob, options)
+  res.send(result)
+})
+
 // POST a bid
 app.post("/api/v1/bids", async (req, res) => {
   const bid = req.body;
