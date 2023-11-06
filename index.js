@@ -88,6 +88,25 @@ app.put("/api/v1/jobs/:id", async(req, res)=>{
   res.send(result)
 })
 
+// DELETE a job
+app.delete("/api/v1/jobs/:id", async(req,res)=>{
+  const id = req.params?.id;
+  const query = {_id: new ObjectId(id)}
+  const result = await jobsCollection.deleteOne(query)
+  res.send(result)
+})
+
+
+// GET bids on user email query
+app.get("/api/v1/bids", async(req,res)=>{
+    let query = {}
+    if(req.query?.userEmail){
+      query = {userEmail: req?.query?.userEmail}
+    }
+    const result = await bidsCollection.find(query).toArray()
+    res.send(result)
+})
+
 // POST a bid
 app.post("/api/v1/bids", async (req, res) => {
   const bid = req.body;
