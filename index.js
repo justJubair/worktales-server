@@ -97,7 +97,7 @@ app.delete("/api/v1/jobs/:id", async(req,res)=>{
 })
 
 
-// GET bids on user email query
+// GET bids on user email and employer email query
 app.get("/api/v1/bids", async(req,res)=>{
     let query = {}
     if(req.query?.userEmail){
@@ -115,6 +115,21 @@ app.post("/api/v1/bids", async (req, res) => {
   const result = await bidsCollection.insertOne(bid);
   res.send(result);
 });
+
+// PATCH; bids got rejected
+app.patch("/api/v1/bids/:id", async(req,res)=>{
+  const id = req?.params.id;
+  const status = req.body;
+  console.log(status.status)
+  const filter = {_id: new ObjectId(id)}
+  const updatedBid = {
+    $set: {
+      status: status.status
+    }
+  }
+  const result = await bidsCollection.updateOne(filter, updatedBid)
+  res.send(result)
+})
 
 app.get("/", (req, res) => {
   res.send("worktales server is Running");
