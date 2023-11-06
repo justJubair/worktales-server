@@ -41,7 +41,14 @@ const jobsCollection = client.db("workTalesDB").collection("jobs");
 const bidsCollection = client.db("workTalesDB").collection("bids");
 // Database collection ENDS
 
-// GET jobs endpoint with category query
+// POST a job 
+app.post("/api/v1/jobs", async(req,res)=>{
+  const job = req.body;
+  const result = await jobsCollection.insertOne(job)
+  res.send(result)
+})
+
+// GET jobs with category query
 app.get("/api/v1/jobs", async (req, res) => {
     let query = {}
     if(req.query?.category){
