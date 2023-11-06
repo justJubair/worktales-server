@@ -102,6 +102,8 @@ app.get("/api/v1/bids", async(req,res)=>{
     let query = {}
     if(req.query?.userEmail){
       query = {userEmail: req?.query?.userEmail}
+    } else if(req?.query?.employerEmail){
+      query = {employerEmail: req?.query?.employerEmail}
     }
     const result = await bidsCollection.find(query).toArray()
     res.send(result)
