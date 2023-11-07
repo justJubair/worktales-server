@@ -96,7 +96,8 @@ app.delete("/api/v1/jobs/:id", async(req,res)=>{
   res.send(result)
 })
 
-// http://localhost:5000/api/v1/bids?sortField=status&sortOrder=asc
+http://localhost:5000/api/v1/bids?userEmail=joey@gmail.com&sortField=status&sortOrder=asc
+
 // GET bids on user email and employer email query
 app.get("/api/v1/bids", async(req,res)=>{
     let query = {}
