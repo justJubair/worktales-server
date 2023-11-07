@@ -89,7 +89,10 @@ app.post("/api/v1/jobs", verifyToken, async (req, res) => {
 });
 
 // GET jobs with category query
-app.get("/api/v1/jobs", async (req, res) => {
+app.get("/api/v1/jobs", verifyToken, async (req, res) => {
+  if(req.query?.employer_email !== req.user?.email){
+      return res.status(403).send({message: "forbidden"})
+  }
   let query = {};
   if (req.query?.category) {
     query = { category: req.query?.category };
