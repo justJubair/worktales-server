@@ -82,7 +82,7 @@ app.post("/api/v1/jwt", (req, res) => {
 // JWT related apis ENDS
 
 // POST a job
-app.post("/api/v1/jobs", async (req, res) => {
+app.post("/api/v1/jobs", verifyToken, async (req, res) => {
   const job = req.body;
   const result = await jobsCollection.insertOne(job);
   res.send(result);
@@ -101,7 +101,7 @@ app.get("/api/v1/jobs", async (req, res) => {
 });
 
 // GET a single job with id
-app.get("/api/v1/jobs/:id", async (req, res) => {
+app.get("/api/v1/jobs/:id",verifyToken, async (req, res) => {
   const id = req.params?.id;
   const query = { _id: new ObjectId(id) };
   const result = await jobsCollection.findOne(query);
