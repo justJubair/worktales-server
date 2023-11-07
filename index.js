@@ -94,19 +94,27 @@ app.post("/api/v1/jobs", verifyToken, async (req, res) => {
 });
 
 // GET jobs with category query
-app.get("/api/v1/jobs", verifyToken, async (req, res) => {
-  // if(req?.query?.employer_email !== req.user?.email){
-  //     return res.status(403).send({message: "forbidden"})
-  // }
+app.get("/api/v1/jobs", async (req, res) => {
+  
   let query = {};
   if (req.query?.category) {
     query = { category: req.query?.category };
-  } else if (req.query?.employer_email) {
-    query = { employer_email: req.query?.employer_email };
-  }
+  } 
   const result = await jobsCollection.find(query).toArray();
   res.send(result);
 });
+
+app.get("/api/v1/postedJobs",verifyToken, async(req,res)=>{
+  if(req?.query?.employer_email !== req.user?.email){
+      return res.status(403).send({message: "forbidden"})
+  }
+  let query = {};
+  if (req.query?.employer_email) {
+    query = { employer_email: req.query?.employer_email };
+  }
+  const result = await jobsCollection.find(query).toArray()
+  res.send(result)
+})
 
 // GET a single job with id
 app.get("/api/v1/jobs/:id",verifyToken, async (req, res) => {
