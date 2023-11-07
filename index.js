@@ -82,7 +82,7 @@ app.post("/api/v1/jwt", (req, res) => {
 // JWT related apis ENDS
 
 // POST a job
-app.post("/api/v1/jobs", verifyToken, async (req, res) => {
+app.post("/api/v1/jobs", async (req, res) => {
   const job = req.body;
   const result = await jobsCollection.insertOne(job);
   res.send(result);
