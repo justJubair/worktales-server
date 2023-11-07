@@ -96,16 +96,21 @@ app.delete("/api/v1/jobs/:id", async(req,res)=>{
   res.send(result)
 })
 
-
+// http://localhost:5000/api/v1/bids?sortField=status&sortOrder=asc
 // GET bids on user email and employer email query
 app.get("/api/v1/bids", async(req,res)=>{
     let query = {}
+    let sortObj = {}
     if(req.query?.userEmail){
       query = {userEmail: req?.query?.userEmail}
     } else if(req?.query?.employerEmail){
       query = {employerEmail: req?.query?.employerEmail}
     }
-    const result = await bidsCollection.find(query).toArray()
+
+    if(req?.query?.sortField && req?.query?.sortOrder){
+      sortObj[req?.query?.sortField] = req?.query?.sortOrder
+    }
+    const result = await bidsCollection.find(query).sort(sortObj).toArray()
     res.send(result)
 })
 
@@ -116,11 +121,10 @@ app.post("/api/v1/bids", async (req, res) => {
   res.send(result);
 });
 
-// PATCH; bids got rejected
+// PATCH; bid status: rejected/accepted/complete
 app.patch("/api/v1/bids/:id", async(req,res)=>{
   const id = req?.params.id;
   const status = req.body;
-  console.log(status.status)
   const filter = {_id: new ObjectId(id)}
   const updatedBid = {
     $set: {
@@ -130,6 +134,8 @@ app.patch("/api/v1/bids/:id", async(req,res)=>{
   const result = await bidsCollection.updateOne(filter, updatedBid)
   res.send(result)
 })
+
+
 
 app.get("/", (req, res) => {
   res.send("worktales server is Running");
