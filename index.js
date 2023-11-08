@@ -63,6 +63,7 @@ run().catch(console.dir);
 // Database collection STARTS
 const jobsCollection = client.db("workTalesDB").collection("jobs");
 const bidsCollection = client.db("workTalesDB").collection("bids");
+const testimonialsCollection = client.db("workTalesDB").collection("testimonials")
 // Database collection ENDS
 
 // JWT related apis START
@@ -193,6 +194,12 @@ app.patch("/api/v1/bids/:id", async (req, res) => {
   const result = await bidsCollection.updateOne(filter, updatedBid);
   res.send(result);
 });
+
+// GET testimonials
+app.get("/api/v1/testimonials", async(req,res)=>{
+  const result = await testimonialsCollection.find().toArray()
+  res.send(result)
+})
 
 app.get("/", (req, res) => {
   res.send("worktales server is Running");
