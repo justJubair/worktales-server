@@ -10,7 +10,11 @@ const port = process.env.PORT || 5000;
 // middlewares
 app.use(
   cors({
-    origin: ["https://worktales-client.web.app", "https://worktales-client.firebaseapp.com"],
+    origin: [
+      
+      "https://worktales-client.web.app",
+      "https://worktales-client.firebaseapp.com",
+    ],
     credentials: true,
   })
 );
@@ -44,7 +48,6 @@ const client = new MongoClient(uri, {
   },
 });
 
-
 async function run() {
   try {
     // Connect the client to the server	(optional starting in v4.7)
@@ -62,28 +65,27 @@ async function run() {
 }
 run().catch(console.dir);
 
- // Database collection STARTS
- const jobsCollection = client.db("workTalesDB").collection("jobs");
- const bidsCollection = client.db("workTalesDB").collection("bids");
- const testimonialsCollection = client.db("workTalesDB").collection("testimonials");
- // Database collection ENDS
+// Database collection STARTS
+const jobsCollection = client.db("workTalesDB").collection("jobs");
+const bidsCollection = client.db("workTalesDB").collection("bids");
+const testimonialsCollection = client
+  .db("workTalesDB")
+  .collection("testimonials");
+// Database collection ENDS
 
 // // JWT related apis START
 app.post("/api/v1/jwt", (req, res) => {
   const user = req.body;
-  console.log(user)
-  console.log("hello")
+
   const token = jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, {
     expiresIn: "1h",
   });
- 
 
   res
     .cookie("token", token, {
       httpOnly: true,
       secure: true,
-      sameSite: "none"
-      
+      sameSite: "none",
     })
     .send({ success: true });
 });
