@@ -10,7 +10,7 @@ const port = process.env.PORT || 5000;
 // middlewares
 app.use(
   cors({
-    origin: ["http://localhost:5173"],
+    origin: ["https://worktales-client.web.app", "https://worktales-client.firebaseapp.com"],
     credentials: true,
   })
 );
@@ -44,12 +44,14 @@ const client = new MongoClient(uri, {
   },
 });
 
+
 async function run() {
   try {
     // Connect the client to the server	(optional starting in v4.7)
-    await client.connect();
+    // await client.connect();
+
     // Send a ping to confirm a successful connection
-    await client.db("admin").command({ ping: 1 });
+    // await client.db("admin").command({ ping: 1 });
     console.log(
       "Pinged your deployment. You successfully connected to MongoDB!"
     );
@@ -60,31 +62,36 @@ async function run() {
 }
 run().catch(console.dir);
 
-// Database collection STARTS
-const jobsCollection = client.db("workTalesDB").collection("jobs");
-const bidsCollection = client.db("workTalesDB").collection("bids");
-const testimonialsCollection = client.db("workTalesDB").collection("testimonials")
-// Database collection ENDS
+ // Database collection STARTS
+ const jobsCollection = client.db("workTalesDB").collection("jobs");
+ const bidsCollection = client.db("workTalesDB").collection("bids");
+ const testimonialsCollection = client.db("workTalesDB").collection("testimonials");
+ // Database collection ENDS
 
-// JWT related apis START
+// // JWT related apis START
 app.post("/api/v1/jwt", (req, res) => {
   const user = req.body;
+  console.log(user)
+  console.log("hello")
   const token = jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, {
     expiresIn: "1h",
   });
+ 
 
   res
     .cookie("token", token, {
       httpOnly: true,
-      secure: false,
+      secure: true,
+      sameSite: "none"
+      
     })
     .send({ success: true });
 });
 
-app.post("/api/v1/logout", (req, res)=>{
+app.post("/api/v1/logout", (req, res) => {
   const user = req.body;
-  res.clearCookie("token", {maxAge:0}).send({success:true})
-})
+  res.clearCookie("token", { maxAge: 0 }).send({ success: true });
+});
 // JWT related apis ENDS
 
 // POST a job
@@ -96,29 +103,28 @@ app.post("/api/v1/jobs", verifyToken, async (req, res) => {
 
 // GET jobs with category query
 app.get("/api/v1/jobs", async (req, res) => {
-  
   let query = {};
   if (req.query?.category) {
     query = { category: req.query?.category };
-  } 
+  }
   const result = await jobsCollection.find(query).toArray();
   res.send(result);
 });
 
-app.get("/api/v1/postedJobs",verifyToken, async(req,res)=>{
-  if(req?.query?.employer_email !== req.user?.email){
-      return res.status(403).send({message: "forbidden"})
+app.get("/api/v1/postedJobs", verifyToken, async (req, res) => {
+  if (req?.query?.employer_email !== req.user?.email) {
+    return res.status(403).send({ message: "forbidden" });
   }
   let query = {};
   if (req.query?.employer_email) {
     query = { employer_email: req.query?.employer_email };
   }
-  const result = await jobsCollection.find(query).toArray()
-  res.send(result)
-})
+  const result = await jobsCollection.find(query).toArray();
+  res.send(result);
+});
 
 // GET a single job with id
-app.get("/api/v1/jobs/:id",verifyToken, async (req, res) => {
+app.get("/api/v1/jobs/:id", verifyToken, async (req, res) => {
   const id = req.params?.id;
   const query = { _id: new ObjectId(id) };
   const result = await jobsCollection.findOne(query);
@@ -156,8 +162,8 @@ app.delete("/api/v1/jobs/:id", async (req, res) => {
 
 // GET bids on user email and employer email query and also sort method
 app.get("/api/v1/bids", verifyToken, async (req, res) => {
-  if((req.query?.userEmail || req.query?.employerEmail) !== req.user?.email){
-        return res.status(403).send({message: "forbidden"})
+  if ((req.query?.userEmail || req.query?.employerEmail) !== req.user?.email) {
+    return res.status(403).send({ message: "forbidden" });
   }
   let query = {};
   let sortObj = {};
@@ -196,10 +202,10 @@ app.patch("/api/v1/bids/:id", async (req, res) => {
 });
 
 // GET testimonials
-app.get("/api/v1/testimonials", async(req,res)=>{
-  const result = await testimonialsCollection.find().toArray()
-  res.send(result)
-})
+app.get("/api/v1/testimonials", async (req, res) => {
+  const result = await testimonialsCollection.find().toArray();
+  res.send(result);
+});
 
 app.get("/", (req, res) => {
   res.send("worktales server is Running");
