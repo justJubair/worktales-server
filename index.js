@@ -11,7 +11,8 @@ const port = process.env.PORT || 5000;
 app.use(
   cors({
     origin: [
-      
+      "http://localhost:5173",
+      "https://intask-client.vercel.app",
       "https://worktales-client.web.app",
       "https://worktales-client.firebaseapp.com",
     ],
